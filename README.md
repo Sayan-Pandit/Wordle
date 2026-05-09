@@ -72,7 +72,7 @@ To run this project locally, you will need the Flutter SDK and a configured Fire
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/wordle.git
+   git clone https://github.com/Sayan-Pandit/Wordle.git
    ```
 2. Install dependencies:
    ```bash
