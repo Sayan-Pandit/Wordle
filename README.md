@@ -84,4 +84,24 @@ To run this project locally, you will need the Flutter SDK and a configured Fire
    ```
 
 ---
+
+## 📦 Production Build Instructions
+
+This project is configured with a secure Kotlin DSL Gradle script, featuring **R8 Minification** and **Resource Shrinking** for highly optimized production builds. 
+
+To build the absolute smallest APKs (saving over 50% in file size compared to standard builds), use the Split-ABI command:
+
+```bash
+# Generates optimized, architecture-specific APKs (~25MB each)
+flutter build apk --release --split-per-abi
+```
+The output files will be located at:
+`android/app/build/outputs/apk/release/`
+
+To build an Android App Bundle (required for Google Play Store deployment):
+```bash
+flutter build appbundle --release
+```
+
+---
 *Engineered with precision for a AAA mobile puzzle experience.*
