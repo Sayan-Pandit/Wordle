@@ -4,6 +4,12 @@
 
 # 🧩 Wordle: Premium Journey
 
+<p align="center">
+  <a href="https://github.com/Sayan-Pandit/Wordle/releases/latest">
+    <img src="https://img.shields.io/badge/Download_for_Android-APK-0D0D0E?style=for-the-badge&logo=android&logoColor=3DDC84&color=0D0D0E&labelColor=000000" alt="Download APK" />
+  </a>
+</p>
+
 ![Flutter](https://img.shields.io/badge/Framework-Flutter-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Language-Dart-0175C2?logo=dart)
 ![Firebase](https://img.shields.io/badge/Backend-Firebase-FFCA28?logo=firebase)
