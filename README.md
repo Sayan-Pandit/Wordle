@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/images/logo.png" width="150" alt="Wordle Premium Logo">
+</p>
+
 # 🧩 Wordle: Premium Journey
 
 ![Flutter](https://img.shields.io/badge/Framework-Flutter-02569B?logo=flutter)
