@@ -7,6 +7,7 @@ import 'package:wordle/controllers/theme_controller.dart';
 import 'package:wordle/pages/main_screen.dart';
 import 'package:wordle/screens/login_screen.dart';
 import 'package:wordle/screens/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:wordle/firebase_options.dart';
 
 // Use a ValueNotifier to manage guest state across the app
@@ -14,6 +15,7 @@ final ValueNotifier<bool> isGuestNotifier = ValueNotifier<bool>(false);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

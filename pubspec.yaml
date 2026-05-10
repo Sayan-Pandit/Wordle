@@ -21,6 +21,7 @@ dependencies:
   cloud_firestore: ^5.6.0
   google_sign_in: 6.1.6
   graphql_flutter: ^5.3.0
+  flutter_dotenv: ^6.0.1
 
 dependency_overrides:
   google_sign_in_android: 6.1.33
@@ -36,6 +37,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - .env
     - assets/images/
 
 flutter_native_splash:
