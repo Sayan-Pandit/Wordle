@@ -54,3 +54,6 @@ android/app/build/
 android/.gradle/
 **/.gradle/
 lib/firebase_options.dart
+
+# Generated APKs
+*.apk
