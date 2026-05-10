@@ -53,7 +53,8 @@ app.*.map.json
 android/app/build/
 android/.gradle/
 **/.gradle/
-lib/firebase_options.dart
+# Security
+.env
 
 # Generated APKs
 *.apk
