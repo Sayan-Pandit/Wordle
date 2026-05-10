@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:wordle/controllers/theme_controller.dart';
 import 'package:wordle/core/theme/app_theme.dart';
 
@@ -99,7 +100,10 @@ class Keyboard extends StatelessWidget {
             return Expanded(
               flex: 2, // All keys are now uniformly sized
               child: GestureDetector(
-                onTap: () => onKeyPress(key),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  onKeyPress(key);
+                },
                 child: Container(
                   height: 56,
                   margin: const EdgeInsets.symmetric(horizontal: 2),

@@ -52,6 +52,7 @@ class StorageService {
       'monthlyXP': 0,
       'lastUpdateMonth': '',
       'updatedAt': 0,
+      'guessDistribution': '{}',
       'daily': {'currentStreak': 0, 'maxStreak': 0, 'wins': 0, 'totalGames': 0},
       'level': {'currentLevel': 1, 'wins': 0, 'totalGames': 0, 'guessDistribution': '{}'}
     };
@@ -59,6 +60,14 @@ class StorageService {
     if (statsStr != null) {
       try {
         localStats = Map<String, dynamic>.from(jsonDecode(statsStr));
+        
+        // Migration: If global distribution is empty but level distribution has data, merge them
+        if ((localStats['guessDistribution'] == null || localStats['guessDistribution'] == '{}') &&
+            localStats['level'] != null && 
+            localStats['level']['guessDistribution'] != null &&
+            localStats['level']['guessDistribution'] != '{}') {
+          localStats['guessDistribution'] = localStats['level']['guessDistribution'];
+        }
       } catch (e) {}
     }
 
@@ -140,6 +149,19 @@ class StorageService {
       stats['monthlyXP'] = (stats['monthlyXP'] ?? 0) + earnedXP;
     }
 
+    // Global Guess Distribution Update (Shared across all modes)
+    if (isWin) {
+      Map<String, dynamic> globalDist = {};
+      try {
+        final rawGlobalDist = stats['guessDistribution'];
+        globalDist = jsonDecode(rawGlobalDist is String ? rawGlobalDist : '{}');
+      } catch (e) {
+        globalDist = {};
+      }
+      globalDist[attempts.toString()] = (globalDist[attempts.toString()] ?? 0) + 1;
+      stats['guessDistribution'] = jsonEncode(globalDist);
+    }
+
     if (mode == GameMode.daily) {
       final daily = Map<String, dynamic>.from(stats['daily'] ?? {});
       daily['totalGames'] = (daily['totalGames'] ?? 0) + 1;
@@ -199,5 +221,20 @@ class StorageService {
   static Future<void> clearGame(String mode) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(mode == 'daily' ? _dailyKey : _levelKey);
+  }
+
+  static Future<void> saveFeedback({
+    required String type,
+    required String message,
+  }) async {
+    final user = _auth.currentUser;
+    await _firestore.collection('feedback').add({
+      'uid': user?.uid ?? 'guest',
+      'email': user?.email ?? 'anonymous',
+      'type': type,
+      'message': message,
+      'timestamp': FieldValue.serverTimestamp(),
+      'platform': 'android/windows',
+    });
   }
 }

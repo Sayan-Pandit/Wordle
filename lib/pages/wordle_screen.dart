@@ -158,7 +158,10 @@ class _WordleScreenState extends State<WordleScreen> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: isReady ? () => _controller.handleKeyPress('ENTER') : null,
+                  onTap: isReady ? () {
+                    HapticFeedback.lightImpact();
+                    _controller.handleKeyPress('ENTER');
+                  } : null,
                   borderRadius: BorderRadius.circular(16),
                   child: Center(
                     child: Text(
@@ -195,7 +198,10 @@ class _WordleScreenState extends State<WordleScreen> {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => _controller.handleKeyPress('DELETE'),
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  _controller.handleKeyPress('DELETE');
+                },
                 borderRadius: BorderRadius.circular(16),
                 child: const Center(
                   child: Icon(Icons.backspace_outlined, size: 20, color: Colors.white),

@@ -53,7 +53,7 @@ class StatisticsPage extends StatelessWidget {
           title: "GUESS DISTRIBUTION",
           icon: Icons.bar_chart_rounded,
           accentColor: AppColors.info,
-          children: [_buildDistributionSection(context, level)],
+          children: [_buildDistributionSection(context, data)],
         ),
         const SizedBox(height: 24),
         _buildSectionCard(
@@ -102,10 +102,10 @@ class StatisticsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDistributionSection(BuildContext context, Map<String, dynamic> level) {
+  Widget _buildDistributionSection(BuildContext context, Map<String, dynamic> data) {
     Map<String, dynamic> dist = {};
     try {
-      final rawDist = level['guessDistribution'];
+      final rawDist = data['guessDistribution'];
       dist = jsonDecode(rawDist is String ? rawDist : '{}');
     } catch (e) {}
     

@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:wordle/controllers/theme_controller.dart';
 import 'package:wordle/services/auth_service.dart';
+import 'package:wordle/services/storage_service.dart';
 import 'package:wordle/core/theme/app_theme.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -96,7 +97,172 @@ class SettingsPage extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 32),
+          const Text(
+            'SUPPORT & FEEDBACK',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.5),
+          ),
+          const SizedBox(height: 16),
+          _buildSettingsCard(
+            context,
+            children: [
+              _buildActionTile(
+                title: 'Report a Bug',
+                subtitle: 'Help us improve the experience',
+                icon: Icons.bug_report_rounded,
+                onTap: () => _showFeedbackDialog(context, 'Report a Bug'),
+              ),
+              const Divider(indent: 50),
+              _buildActionTile(
+                title: 'Suggest a Feature',
+                subtitle: 'Share your ideas with us',
+                icon: Icons.lightbulb_rounded,
+                onTap: () => _showFeedbackDialog(context, 'Suggest a Feature'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          const Text(
+            'ABOUT',
+            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1.5),
+          ),
+          const SizedBox(height: 16),
+          _buildSettingsCard(
+            context,
+            children: [
+              _buildActionTile(
+                title: 'App Version',
+                subtitle: 'v1.1.1 (Stable)',
+                icon: Icons.info_outline_rounded,
+                onTap: () => _showAboutDialog(context),
+              ),
+              const Divider(indent: 50),
+              _buildActionTile(
+                title: 'Privacy Policy',
+                subtitle: 'How we handle your data',
+                icon: Icons.policy_rounded,
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Privacy Policy coming soon!')),
+                  );
+                },
+              ),
+            ],
+          ),
           const SizedBox(height: 100),
+        ],
+      ),
+    );
+  }
+
+  void _showFeedbackDialog(BuildContext context, String title) {
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Your feedback helps us make Wordle better for everyone.",
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: controller,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: "Enter details here...",
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+                filled: true,
+                fillColor: Colors.black26,
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("CANCEL", style: TextStyle(color: Colors.grey))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGreen,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () async {
+              if (controller.text.trim().isNotEmpty) {
+                await StorageService.saveFeedback(
+                  type: title,
+                  message: controller.text.trim(),
+                );
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Thank you! Your feedback has been sent.")),
+                  );
+                }
+              }
+            },
+            child: const Text("SUBMIT"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A1A),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFF2A2A2A),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Image.asset('assets/images/logo.png', fit: BoxFit.contain, errorBuilder: (_, __, ___) => const Icon(Icons.grid_4x4_rounded, color: Colors.amber, size: 40)),
+            ),
+            const SizedBox(height: 20),
+            const Text("WORDLE PREMIUM", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 2)),
+            const Text(
+              "Version 1.1.1",
+              style: TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 24),
+            const Divider(color: Colors.white10),
+            const SizedBox(height: 24),
+            const Text(
+              "The ultimate Wordle experience, now secured and optimized. Built with passion for the global community of word lovers.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                height: 1.5,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 32),
+            const Text("© 2026 Wordle Studio", style: TextStyle(color: Colors.white38, fontSize: 10, letterSpacing: 1)),
+          ],
+        ),
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("CLOSE", style: TextStyle(color: AppColors.primaryGreen, fontWeight: FontWeight.bold)),
+            ),
+          ),
         ],
       ),
     );

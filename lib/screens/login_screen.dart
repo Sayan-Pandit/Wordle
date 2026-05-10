@@ -15,6 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
   bool _isLoading = false;
+  bool _obscurePassword = true;
 
   void _login() async {
     setState(() => _isLoading = true);
@@ -26,8 +27,33 @@ class _LoginScreenState extends State<LoginScreen> {
       // No manual navigation needed! AuthWrapper in main.dart handles it.
     } catch (e) {
       if (mounted) {
+        String msg = e.toString();
+        
+        // Map technical Firebase errors to friendly messages
+        if (msg.contains('invalid-credential') || msg.contains('wrong-password') || msg.contains('user-not-found')) {
+          msg = "Invalid email or password. Please try again.";
+        } else if (msg.contains('too-many-requests')) {
+          msg = "Too many attempts. Please try again later.";
+        } else if (msg.contains('network-request-failed')) {
+          msg = "Network error. Check your connection.";
+        } else if (msg.contains('] ')) {
+          msg = msg.split('] ').last;
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 12),
+                Expanded(child: Text(msg, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13))),
+              ],
+            ),
+            backgroundColor: Colors.redAccent.withOpacity(0.9),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(20),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          ),
         );
       }
     } finally {
@@ -42,8 +68,33 @@ class _LoginScreenState extends State<LoginScreen> {
       // No manual navigation needed!
     } catch (e) {
       if (mounted) {
+        String msg = e.toString();
+        
+        // Map technical Firebase errors to friendly messages
+        if (msg.contains('invalid-credential') || msg.contains('wrong-password') || msg.contains('user-not-found')) {
+          msg = "Invalid email or password. Please try again.";
+        } else if (msg.contains('too-many-requests')) {
+          msg = "Too many attempts. Please try again later.";
+        } else if (msg.contains('network-request-failed')) {
+          msg = "Network error. Check your connection.";
+        } else if (msg.contains('] ')) {
+          msg = msg.split('] ').last;
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString()), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error_outline_rounded, color: Colors.white, size: 20),
+                const SizedBox(width: 12),
+                Expanded(child: Text(msg, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13))),
+              ],
+            ),
+            backgroundColor: Colors.redAccent.withOpacity(0.9),
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(20),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          ),
         );
       }
     } finally {
@@ -72,8 +123,18 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 16),
               TextField(
                 controller: _passwordController,
-                decoration: const InputDecoration(hintText: 'Password', prefixIcon: Icon(Icons.lock)),
-                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: 'Password',
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.white60,
+                    ),
+                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                  ),
+                ),
+                obscureText: _obscurePassword,
               ),
               const SizedBox(height: 8),
               Align(

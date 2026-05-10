@@ -74,7 +74,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 _buildStatsPreview(context, isDark, metrics),
                 const SizedBox(height: 40),
                 TextButton.icon(
-                  onPressed: () => _authService.signOut(),
+                  onPressed: () {
+                    _authService.signOut();
+                    Navigator.pop(context);
+                  },
                   icon: const Icon(Icons.logout_rounded, size: 18),
                   label: const Text("SIGN OUT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
                   style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
