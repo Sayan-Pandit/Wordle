@@ -98,6 +98,10 @@ class _MainScreenState extends State<MainScreen> {
       height: 70,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(35),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.1), 
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(isDark ? 0.5 : 0.1), blurRadius: 30, offset: const Offset(0, 15)),
         ],
@@ -105,9 +109,9 @@ class _MainScreenState extends State<MainScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(35),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Container(
-            color: (isDark ? AppColors.darkSurface : Colors.white).withOpacity(0.85),
+            color: (isDark ? Colors.black : Colors.white).withOpacity(0.4),
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

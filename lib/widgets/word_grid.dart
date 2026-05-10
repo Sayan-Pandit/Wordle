@@ -30,7 +30,10 @@ class WordGrid extends StatelessWidget {
           rowGuess = currentGuess;
         }
 
-        final rowStatuses = _getRowStatuses(rowGuess, targetWord);
+        List<String> rowStatuses = [];
+        if (row < guesses.length) {
+          rowStatuses = _getRowStatuses(rowGuess, targetWord);
+        }
 
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4),

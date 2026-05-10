@@ -14,12 +14,14 @@ class Keyboard extends StatelessWidget {
     required this.targetWord,
   });
 
-  Color _getKeyColor(String letter) {
+  Color _getKeyColor(BuildContext context, String letter) {
     String bestStatus = 'EMPTY';
 
     for (var guess in guesses) {
+      if (guess.length != 5) continue;
+      
       final statuses = _getRowStatuses(guess, targetWord);
-      for (int i = 0; i < guess.length; i++) {
+      for (int i = 0; i < 5; i++) {
         if (guess[i] == letter) {
           final status = statuses[i];
           if (status == 'CORRECT') {
@@ -33,9 +35,11 @@ class Keyboard extends StatelessWidget {
       }
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     if (bestStatus == 'CORRECT') return AppColors.primaryGreen;
     if (bestStatus == 'MISPLACED') return AppColors.primaryYellow;
-    if (bestStatus == 'ABSENT') return AppColors.absentGrey;
+    if (bestStatus == 'ABSENT') return isDark ? const Color(0xFF3A3A3C) : AppColors.absentGrey;
     return Colors.transparent;
   }
 
@@ -68,56 +72,78 @@ class Keyboard extends StatelessWidget {
     final rows = [
       ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
       ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-      ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'DELETE'],
+      ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
     ];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Column(
-        children: rows.map((row) {
+        children: rows.asMap().entries.map((entry) {
+          int rowIndex = entry.key;
+          List<String> row = entry.value;
+
+          List<Widget> rowChildren = [];
+
+          // Add half-key indentation for the middle row (A-L)
+          if (rowIndex == 1) {
+            rowChildren.add(const Spacer(flex: 1));
+          }
+          // Add perfect symmetry indentation for the bottom row
+          else if (rowIndex == 2) {
+            rowChildren.add(const Spacer(flex: 3));
+          }
+
+          rowChildren.addAll(row.map((key) {
+            final color = _getKeyColor(context, key);
+            
+            return Expanded(
+              flex: 2, // All keys are now uniformly sized
+              child: GestureDetector(
+                onTap: () => onKeyPress(key),
+                child: Container(
+                  height: 56,
+                  margin: const EdgeInsets.symmetric(horizontal: 2),
+                  decoration: BoxDecoration(
+                    color: color == Colors.transparent 
+                      ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF818384) : const Color(0xFFD3D6DA))
+                      : color,
+                    borderRadius: BorderRadius.circular(6),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 2,
+                        offset: const Offset(0, 2),
+                      )
+                    ],
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    key,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }));
+
+          // Add half-key indentation for the middle row (A-L)
+          if (rowIndex == 1) {
+            rowChildren.add(const Spacer(flex: 1));
+          }
+          // Add perfect symmetry indentation for the bottom row right side
+          else if (rowIndex == 2) {
+            rowChildren.add(const Spacer(flex: 3));
+          }
+
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: row.map((key) {
-                final color = _getKeyColor(key);
-                final isSpecial = key == 'ENTER' || key == 'DELETE';
-                
-                return Expanded(
-                  flex: isSpecial ? 2 : 1,
-                  child: GestureDetector(
-                    onTap: () => onKeyPress(key),
-                    child: Container(
-                      height: 56,
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      decoration: BoxDecoration(
-                        color: color == Colors.transparent 
-                          ? (Theme.of(context).brightness == Brightness.dark ? const Color(0xFF818384) : const Color(0xFFD3D6DA))
-                          : color,
-                        borderRadius: BorderRadius.circular(6),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 2,
-                            offset: const Offset(0, 2),
-                          )
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: key == 'DELETE' 
-                        ? const Icon(Icons.backspace_outlined, size: 18, color: Colors.white)
-                        : Text(
-                            key,
-                            style: TextStyle(
-                              fontSize: isSpecial ? 10 : 14,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                            ),
-                          ),
-                    ),
-                  ),
-                );
-              }).toList(),
+              children: rowChildren,
             ),
           );
         }).toList(),

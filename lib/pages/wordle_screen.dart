@@ -91,32 +91,40 @@ class _WordleScreenState extends State<WordleScreen> {
     final targetWord = _controller.targetWord;
     if (targetWord == null) return const Center(child: CircularProgressIndicator(color: AppColors.primaryGreen));
 
-    return Column(
-      children: [
-        const SizedBox(height: 10),
-        Expanded(
-          child: Center(
-            child: WordGrid(
-              guesses: _controller.guesses,
-              currentGuess: _controller.currentGuess,
-              targetWord: targetWord,
+    return SafeArea(
+      child: Column(
+        children: [
+          const SizedBox(height: 10),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: WordGrid(
+                    guesses: _controller.guesses,
+                    currentGuess: _controller.currentGuess,
+                    targetWord: targetWord,
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-        
-        // NEW INTEGRATED SUBMIT BUTTON
-        if (_controller.gameStatus == 'PLAYING') _buildSubmitButton(),
-
-        if (_controller.gameStatus == 'WON' || _controller.gameStatus == 'LOST')
-          _buildResultOverlay(context)
-        else
-          Keyboard(
-            onKeyPress: _controller.handleKeyPress,
-            guesses: _controller.guesses,
-            targetWord: targetWord,
-          ),
-        const SizedBox(height: 20),
-      ],
+          
+          // NEW INTEGRATED SUBMIT BUTTON
+          if (_controller.gameStatus == 'PLAYING') _buildSubmitButton(),
+  
+          if (_controller.gameStatus == 'WON' || _controller.gameStatus == 'LOST')
+            _buildResultOverlay(context)
+          else
+            Keyboard(
+              onKeyPress: _controller.handleKeyPress,
+              guesses: _controller.guesses,
+              targetWord: targetWord,
+            ),
+          const SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
@@ -127,42 +135,75 @@ class _WordleScreenState extends State<WordleScreen> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          color: isError 
-              ? Colors.redAccent 
-              : (isReady ? AppColors.primaryGreen : AppColors.absentGrey.withOpacity(0.5)),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            if (isReady || isError)
-              BoxShadow(
-                color: (isError ? Colors.redAccent : AppColors.primaryGreen).withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: isReady ? () => _controller.handleKeyPress('ENTER') : null,
-            borderRadius: BorderRadius.circular(16),
-            child: Center(
-              child: Text(
-                isError ? message.toUpperCase() : "SUBMIT GUESS",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.5,
-                  fontSize: 14,
+      child: Row(
+        children: [
+          Expanded(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 50,
+              decoration: BoxDecoration(
+                color: isError 
+                    ? Colors.redAccent 
+                    : (isReady ? AppColors.primaryGreen : AppColors.absentGrey.withOpacity(0.5)),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  if (isReady || isError)
+                    BoxShadow(
+                      color: (isError ? Colors.redAccent : AppColors.primaryGreen).withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    )
+                ],
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: isReady ? () => _controller.handleKeyPress('ENTER') : null,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Center(
+                    child: Text(
+                      isError ? message.toUpperCase() : "SUBMIT GUESS",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+          const SizedBox(width: 12),
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Theme.of(context).brightness == Brightness.dark 
+                  ? const Color(0xFF818384) 
+                  : const Color(0xFFD3D6DA),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 2,
+                  offset: const Offset(0, 2),
+                )
+              ],
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _controller.handleKeyPress('DELETE'),
+                borderRadius: BorderRadius.circular(16),
+                child: const Center(
+                  child: Icon(Icons.backspace_outlined, size: 20, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
